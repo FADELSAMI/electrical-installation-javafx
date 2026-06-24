@@ -1,6 +1,7 @@
 package org.isfce.pdb.services;
 
 import org.isfce.pdb.model.Localisation;
+import java.math.BigDecimal;
 import java.io.BufferedReader; 
 import java.io.FileReader;
 import java.io.IOException;
@@ -313,7 +314,7 @@ public class Facade {
 		sauverLocalisation(element);
 	}
 	
-	public void ajouterPlan(String nom, String fichier) throws InstallationException {
+	public void ajouterPlan(String nom, String fichier, BigDecimal etage) throws InstallationException {
 		try {
 			if (installation == null)
 				throw new InstallationException(I18N.getString("err.noInstall"));
@@ -322,6 +323,7 @@ public class Facade {
 					0,
 					nom.trim(),
 					fichier.trim(),
+					etage,
 					installation
 			);
 

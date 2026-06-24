@@ -17,21 +17,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SQLPlanDao implements IPlanDao {
 	private static String SQL_GET_LISTE_FROM_INSTALLATION = """
-			SELECT ID_PLA, NOM_PLA, FICHIER_PLA
+			SELECT ID_PLA, NOM_PLA, FICHIER_PLA, ETAGE_PLA
 			FROM TPLAN
 			WHERE FKINSTALLATION_PLA = ?
 			ORDER BY NOM_PLA
 			""";
 	
 	private static String SQL_GET_FROM_ID = """
-			SELECT ID_PLA, NOM_PLA, FICHIER_PLA, FKINSTALLATION_PLA
+			SELECT ID_PLA, NOM_PLA, FICHIER_PLA, FKINSTALLATION_PLA, ETAGE_PLA
 			FROM TPLAN
 			WHERE ID_PLA = ?
 			""";
 
 	private static String SQL_INSERT = """
-			INSERT INTO TPLAN (NOM_PLA, FICHIER_PLA, FKINSTALLATION_PLA)
-			VALUES (?, ?, ?)
+			INSERT INTO TPLAN (NOM_PLA, FICHIER_PLA, FKINSTALLATION_PLA, ETAGE_PLA)
+			VALUES (?, ?, ?, ?)
 			""";
 
 	private DAOFactory factory;
@@ -59,6 +59,7 @@ public class SQLPlanDao implements IPlanDao {
 						rs.getInt("ID_PLA"),
 						rs.getString("NOM_PLA"),
 						rs.getString("FICHIER_PLA"),
+						rs.getBigDecimal("ETAGE_PLA"),
 						inst
 				);
 			}
@@ -87,8 +88,9 @@ public class SQLPlanDao implements IPlanDao {
 						rs.getInt("ID_PLA"),
 						rs.getString("NOM_PLA"),
 						rs.getString("FICHIER_PLA"),
+						rs.getBigDecimal("ETAGE_PLA"),
 						inst
-				));
+					));
 			}
 		} catch (SQLException e) {
 			log.error(e.getMessage());
@@ -105,6 +107,7 @@ public class SQLPlanDao implements IPlanDao {
 			ps.setString(1, obj.getNom().trim());
 			ps.setString(2, obj.getFichier().trim());
 			ps.setInt(3, obj.getInstallation().getId());
+			ps.setBigDecimal(4, obj.getEtage());
 
 			int nb = ps.executeUpdate();
 

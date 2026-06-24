@@ -2,7 +2,6 @@ package org.isfce.pdb.view.plan;
 
 import org.isfce.pdb.controller.MainController;
 import org.isfce.pdb.exceptions.InstallationException;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -17,6 +16,9 @@ public class VuePlanController {
 
 	@FXML
 	private TextField txtFichier;
+	
+	@FXML
+	private TextField txtEtage;
 
 	public void setUp(MainController ctrl, Stage stage) {
 		this.ctrl = ctrl;
@@ -28,7 +30,8 @@ public class VuePlanController {
 		try {
 			ctrl.getFacade().ajouterPlan(
 					txtNom.getText(),
-					txtFichier.getText());
+					txtFichier.getText(),
+					new java.math.BigDecimal(txtEtage.getText()));
 
 			stage.close();
 		} catch (InstallationException e) {

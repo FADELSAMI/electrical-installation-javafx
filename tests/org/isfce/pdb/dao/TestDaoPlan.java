@@ -1,8 +1,9 @@
 package org.isfce.pdb.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.math.BigDecimal;
 import org.isfce.pdb.dao.DAOFactory.TypePersistance;
 import org.isfce.pdb.databases.connexion.ConnexionFromFile;
 import org.isfce.pdb.databases.connexion.ConnexionSingleton;
@@ -59,12 +60,20 @@ public class TestDaoPlan {
 	void testInsert() throws Exception {
 		Installation installation = daoInstallation.getFromID(3).get();
 
-		Plan plan = new Plan(0, "Grenier", "grenier.png", installation);
+		Plan plan = new Plan(
+				0,
+				"Grenier",
+				"grenier.png",
+				BigDecimal.valueOf(2),
+				installation
+		);
+
 		Plan retour = dao.insert(plan);
 
 		assertTrue(retour.getId() > 0);
 		assertEquals("Grenier", retour.getNom());
 		assertEquals("grenier.png", retour.getFichier());
+		assertEquals(BigDecimal.valueOf(2), retour.getEtage());
 		assertEquals(3, retour.getInstallation().getId());
 	}
 }

@@ -8,16 +8,21 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.isfce.pdb.view.plan.VuePlanController"
-            prefWidth="400" prefHeight="180">
+            prefWidth="400" prefHeight="220">
 
    <children>
+
       <Label text="Nom" layoutX="30" layoutY="30" />
       <TextField fx:id="txtNom" layoutX="120" layoutY="25" prefWidth="230" />
 
       <Label text="Fichier" layoutX="30" layoutY="75" />
       <TextField fx:id="txtFichier" layoutX="120" layoutY="70" prefWidth="230" />
 
-      <Button text="Ajouter" layoutX="120" layoutY="125" onAction="#actionAjouter" />
-      <Button text="Annuler" layoutX="220" layoutY="125" onAction="#actionAnnuler" />
+      <Label text="Etage" layoutX="30" layoutY="120" />
+      <TextField fx:id="txtEtage" layoutX="120" layoutY="115" prefWidth="230" />
+
+      <Button text="Ajouter" layoutX="120" layoutY="165" onAction="#actionAjouter" />
+      <Button text="Annuler" layoutX="220" layoutY="165" onAction="#actionAnnuler" />
+
    </children>
 </AnchorPane>

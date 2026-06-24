@@ -1,4 +1,7 @@
 package org.isfce.pdb.view.piece;
+
+import org.isfce.pdb.model.Plan;
+import javafx.scene.control.ComboBox;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
@@ -55,6 +58,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VueListePiecesController implements Initializable, Subscriber<ListMessages> {
 
+	@FXML
+	private TableColumn<Piece,String> colPlan;
+	
 	@FXML
 	private Button btAjouterPiece;
 
@@ -196,6 +202,13 @@ public class VueListePiecesController implements Initializable, Subscriber<ListM
 		colDescription.setCellValueFactory(p -> new ReadOnlyStringWrapper(p.getValue().getDescription()));
 		colTypePiece.setCellValueFactory(p -> new SimpleObjectProperty<TypePiece>(p.getValue().getTypePiece()));
 		colEtage.setCellValueFactory(p -> new SimpleObjectProperty<BigDecimal>(p.getValue().getEtage()));
+		colPlan.setCellValueFactory(
+				p -> new ReadOnlyStringWrapper(
+					p.getValue().getPlan() == null
+						? ""
+						: p.getValue().getPlan().getNom()
+				)
+			);
 		// Rendre certaines colonnes modifiables
 		tblPieces.setEditable(true);
 		// NOM
@@ -381,6 +394,53 @@ public class VueListePiecesController implements Initializable, Subscriber<ListM
 				super.updateItem(item, empty);
 			}
 
+		});
+		
+		//col plan
+		colPlan.setCellFactory(col -> new TableCell<>() {
+
+			private final ComboBox<Plan> combo = new ComboBox<>();
+
+			@Override
+			protected void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
+
+				if (empty || getIndex() < 0
+						|| getIndex() >= getTableView().getItems().size()) {
+					setGraphic(null);
+					return;
+				}
+
+				Piece piece = getTableView().getItems().get(getIndex());
+
+				combo.setItems(
+						FXCollections.observableArrayList(
+								ctrl.getFacade().getListePlans()));
+
+				combo.setValue(piece.getPlan());
+
+				combo.setOnAction(e -> {
+
+					Plan plan = combo.getValue();
+
+					if (plan != null) {
+
+						if (piece.getEtage().compareTo(plan.getEtage()) != 0) {
+							ctrl.showErreur("L'étage de la pièce ne correspond pas à l'étage du plan");
+							combo.setValue(piece.getPlan());
+							return;
+						}
+
+						piece.setPlan(plan);
+
+						mapUpdate.put(piece.getId(), piece);
+						update.set(true);
+
+						getTableView().refresh();
+					}
+				});
+				setGraphic(combo);
+			}
 		});
 
 		// Bt Valider actif si maj

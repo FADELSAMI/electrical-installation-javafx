@@ -29,7 +29,12 @@ public class SQLPieceDao implements IPieceDao {
 			VALUES (?,?,?,?,?)
 			""";
 	private static String SQL_UPDATE = """
-			UPDATE TPIECE SET NOM_PIE = ?, DESCRIPTION_PIE = ?, ETAGE_PIE = ?, FKTYPE_PIE = ?
+			UPDATE TPIECE
+			SET NOM_PIE = ?,
+			    DESCRIPTION_PIE = ?,
+			    ETAGE_PIE = ?,
+			    FKTYPE_PIE = ?,
+			    FKPLAN_PIE = ?
 			WHERE NUM_PIE = ?
 			""";
 	private static String SQL_DELETE = """
@@ -148,7 +153,8 @@ public class SQLPieceDao implements IPieceDao {
 			ps.setString(2,obj.getDescription());
 			ps.setBigDecimal(3, obj.getEtage());
 			ps.setString(4, obj.getTypePiece().getCode());
-			ps.setInt(5, obj.getId());
+			ps.setInt(5, obj.getPlan().getId());
+			ps.setInt(6, obj.getId());
 			int nb = ps.executeUpdate();
 			if (nb == 1) {
 				if (!this.connexion.getAutoCommit())
