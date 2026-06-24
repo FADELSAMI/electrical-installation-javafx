@@ -1,16 +1,16 @@
 package org.isfce.pdb.model;
 
-import java.math.BigDecimal;
-
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class Localisation {
-	private Element element;
 	private Piece piece;
-	private BigDecimal x;
-	private BigDecimal y;
-	private BigDecimal angle;
+	private double x;
+	private double y;
+	private double angle;
+	private boolean place;
 }

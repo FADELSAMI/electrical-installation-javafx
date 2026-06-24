@@ -4,7 +4,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class I18N {
-	private static final String GLOBAL_BUNDLE_BASE_NAME = "org/isfce/view/bundle/installation";
+	private static final String GLOBAL_BUNDLE_BASE_NAME =
+		    "org/isfce/pdb/view/bundle/installation";
 
 	private static final ResourceBundle.Control HIERARCHICAL_CONTROL = new HierarchicalBundleControl(
 			GLOBAL_BUNDLE_BASE_NAME);

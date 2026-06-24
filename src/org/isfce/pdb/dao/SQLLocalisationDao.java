@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import org.isfce.pdb.model.Element;
 import org.isfce.pdb.model.Localisation;
 import org.isfce.pdb.model.Piece;
 
@@ -15,19 +14,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SQLLocalisationDao implements ILocalisationDao {
 	private static String SQL_GET_FROM_ID = """
-			SELECT FKELEMENT_LOC, FKPIECE_LOC, X_LOC, Y_LOC, A_LOC
+			SELECT FKELEMENT_LOC, FKPIECE_LOC, X_LOC, Y_LOC, A_LOC, PLACE_LOC
 			FROM TLOCALISATION
 			WHERE FKELEMENT_LOC = ?
 			""";
 
 	private static String SQL_INSERT = """
-			INSERT INTO TLOCALISATION (FKELEMENT_LOC, FKPIECE_LOC, X_LOC, Y_LOC, A_LOC)
-			VALUES (?, ?, ?, ?, ?)
+			INSERT INTO TLOCALISATION (FKELEMENT_LOC, FKPIECE_LOC, X_LOC, Y_LOC, A_LOC, PLACE_LOC)
+			VALUES (?, ?, ?, ?, ?, ?)
 			""";
 
 	private static String SQL_UPDATE = """
 			UPDATE TLOCALISATION
-			SET FKPIECE_LOC = ?, X_LOC = ?, Y_LOC = ?, A_LOC = ?
+			SET FKPIECE_LOC = ?, X_LOC = ?, Y_LOC = ?, A_LOC = ?, PLACE_LOC = ?
 			WHERE FKELEMENT_LOC = ?
 			""";
 
@@ -43,52 +42,48 @@ public class SQLLocalisationDao implements ILocalisationDao {
 		this.factory = factory;
 		this.connexion = factory.getConnection();
 	}
-	
+
 	@Override
-	public Optional<Localisation> getFromID(Integer id) {
+	public Optional<Localisation> getFromID(Integer idElement) {
 		Localisation obj = null;
 
 		try (PreparedStatement ps = connexion.prepareStatement(SQL_GET_FROM_ID)) {
-			ps.setInt(1, id);
+			ps.setInt(1, idElement);
 			ResultSet rs = ps.executeQuery();
 
 			if (rs.next()) {
-				Element element = factory.getElementDAO()
-						.getFromID(rs.getInt("FKELEMENT_LOC"))
-						.get();
-
 				Piece piece = factory.getPieceDAO()
 						.getFromID(rs.getInt("FKPIECE_LOC"))
 						.get();
 
 				obj = Localisation.builder()
-						.element(element)
 						.piece(piece)
-						.x(rs.getBigDecimal("X_LOC"))
-						.y(rs.getBigDecimal("Y_LOC"))
-						.angle(rs.getBigDecimal("A_LOC"))
+						.x(rs.getDouble("X_LOC"))
+						.y(rs.getDouble("Y_LOC"))
+						.angle(rs.getDouble("A_LOC"))
+						.place(rs.getBoolean("PLACE_LOC"))
 						.build();
 
 				log.debug("Localisation chargée: " + obj);
 			}
-
 		} catch (SQLException e) {
 			log.error(e.getMessage());
 		}
 
 		return Optional.ofNullable(obj);
 	}
-	
+
 	@Override
-	public Localisation insert(Localisation obj) throws Exception {
-		assert obj != null : "L'objet doit exister";
+	public Localisation insert(int idElement, Localisation obj) throws Exception {
+		assert obj != null : "L'objet localisation doit exister";
 
 		try (PreparedStatement ps = connexion.prepareStatement(SQL_INSERT)) {
-			ps.setInt(1, obj.getElement().getId());
+			ps.setInt(1, idElement);
 			ps.setInt(2, obj.getPiece().getId());
-			ps.setBigDecimal(3, obj.getX());
-			ps.setBigDecimal(4, obj.getY());
-			ps.setBigDecimal(5, obj.getAngle());
+			ps.setDouble(3, obj.getX());
+			ps.setDouble(4, obj.getY());
+			ps.setDouble(5, obj.getAngle());
+			ps.setBoolean(6, obj.isPlace());
 
 			ps.executeUpdate();
 
@@ -96,68 +91,72 @@ public class SQLLocalisationDao implements ILocalisationDao {
 				connexion.commit();
 
 			log.debug("Localisation ajoutée: " + obj);
-
 		} catch (SQLException e) {
-			log.error("Insertion non validée: " + e);
+			log.error("Insertion localisation non validée: " + e);
 
 			if (!connexion.getAutoCommit())
 				connexion.rollback();
 
-			this.factory.dispatchException(e, "TLOCALISATION");
+			this.factory.dispatchException(e, "[INS] TLOCALISATION");
 		}
 
 		return obj;
 	}
-	
+
 	@Override
-	public boolean update(Localisation obj) throws Exception {
+	public boolean update(int idElement, Localisation obj) throws Exception {
+		boolean ok = false;
+
 		try (PreparedStatement ps = connexion.prepareStatement(SQL_UPDATE)) {
 			ps.setInt(1, obj.getPiece().getId());
-			ps.setBigDecimal(2, obj.getX());
-			ps.setBigDecimal(3, obj.getY());
-			ps.setBigDecimal(4, obj.getAngle());
-			ps.setInt(5, obj.getElement().getId());
+			ps.setDouble(2, obj.getX());
+			ps.setDouble(3, obj.getY());
+			ps.setDouble(4, obj.getAngle());
+			ps.setBoolean(5, obj.isPlace());
+			ps.setInt(6, idElement);
 
 			int nb = ps.executeUpdate();
 
-			if (!connexion.getAutoCommit())
-				connexion.commit();
-
-			return nb == 1;
-
+			if (nb == 1) {
+				if (!connexion.getAutoCommit())
+					connexion.commit();
+				ok = true;
+			}
 		} catch (SQLException e) {
-			log.error("Update non validé: " + e);
+			log.error("Update localisation non validé: " + e);
 
 			if (!connexion.getAutoCommit())
 				connexion.rollback();
 
-			this.factory.dispatchException(e, "TLOCALISATION");
+			this.factory.dispatchException(e, "[UPD] TLOCALISATION");
 		}
 
-		return false;
+		return ok;
 	}
-	
+
 	@Override
-	public boolean delete(Localisation obj) throws Exception {
+	public boolean delete(int idElement) throws Exception {
+		boolean ok = false;
+
 		try (PreparedStatement ps = connexion.prepareStatement(SQL_DELETE)) {
-			ps.setInt(1, obj.getElement().getId());
+			ps.setInt(1, idElement);
 
 			int nb = ps.executeUpdate();
 
-			if (!connexion.getAutoCommit())
-				connexion.commit();
-
-			return nb == 1;
-
+			if (nb == 1) {
+				if (!connexion.getAutoCommit())
+					connexion.commit();
+				ok = true;
+			}
 		} catch (SQLException e) {
-			log.error("Delete non validé: " + e);
+			log.error("Delete localisation non validé: " + e);
 
 			if (!connexion.getAutoCommit())
 				connexion.rollback();
 
-			this.factory.dispatchException(e, "TLOCALISATION");
+			this.factory.dispatchException(e, "[DEL] TLOCALISATION");
 		}
 
-		return false;
+		return ok;
 	}
 }

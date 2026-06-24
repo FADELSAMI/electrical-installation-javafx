@@ -1,7 +1,5 @@
 package org.isfce.pdb.model;
 
-import java.io.Serializable;
-
 /**
  * @author Didier
  * width et height tjs positifs

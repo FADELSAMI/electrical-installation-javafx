@@ -15,7 +15,6 @@
 	-fx-background-color: lightgrey;
 	-fx-padding: 5.0
 }
-
 .button{
 	-fx-font: 15.0px 'Georgia';
 }
@@ -24,4 +23,13 @@
 }
 .button:hover{
 	-fx-border-color: #2E7D32 
+}
+.text-field:error{
+	-fx-background-color: orange;
+	-fx-border-color: red;
+}
+
+.combo-box:error{
+	-fx-background-color: orange;
+	-fx-border-color: red;
 }

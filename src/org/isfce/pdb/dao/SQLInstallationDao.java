@@ -118,10 +118,13 @@ public class SQLInstallationDao implements IInstallationDao {
 
 			int nb = ps.executeUpdate();
 
-			if (!connexion.getAutoCommit())
-				connexion.commit();
+			if (nb == 1) {
+				if (!connexion.getAutoCommit())
+					connexion.commit();
+				return true;
+			}
 
-			return nb == 1;
+			return false;
 
 		} catch (SQLException e) {
 			log.error("Update non validé: " + e);

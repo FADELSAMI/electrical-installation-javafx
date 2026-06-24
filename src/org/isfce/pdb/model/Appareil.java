@@ -20,3 +20,4 @@ public final class Appareil {
 	private final Svg svg;
 	private final Classe classe;
 }
+

@@ -19,4 +19,9 @@ public class Installation {
 	private String Installateur;
 	
 	private String proprietaire;
+	
+	@Override
+	public String toString() {
+		return id + " - " + adresse.getRue() + " " + adresse.getCp() + " " + adresse.getVille();
+	}
 }

@@ -1,12 +1,12 @@
 package org.isfce.pdb.dao;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
+import java.sql.SQLException;
 import org.isfce.pdb.exceptions.CheckException;
 import org.isfce.pdb.exceptions.InstallationException;
 import org.isfce.pdb.exceptions.PKException;
-
+import org.isfce.pdb.exceptions.FKException;
 public class FBDAOFactory extends DAOFactory {
 	private Connection connexion;
 	private ITypePieceDao daoTypePiece = null;
@@ -90,17 +90,26 @@ public class FBDAOFactory extends DAOFactory {
 		throw switch (exc.getErrorCode()) {
 		case 335544665 -> new PKException(e.getMessage(), detail);
 		case 335544347 -> new CheckException(e.getMessage(), detail);
-
-		default -> new InstallationException(" Problème "+exc);
-
+		case 335544466 -> {
+			String txt;
+			String err;
+			if (detail.startsWith("[DEL]")) {
+				err = "err.suppression.impossible";
+				txt = detail.substring(5);
+			} else if (detail.startsWith("[INS]")) {
+				err = "err.insertion.impossible";
+				txt = detail.substring(5);
+			} else if (detail.startsWith("[UPD]")) {
+				err = "err.mise_a_jour.impossible";
+				txt = detail.substring(5);
+			} else {
+				err = "err.insertion.impossible";
+				txt = detail;
+			}
+			yield new FKException(err, txt);
+		}
+		default -> new InstallationException(" Problème " + exc);
 		};
-
-	}
-
-	private static String findNom(String erreur) {
-		int i = erreur.indexOf(".\"") + 2;
-		int j = erreur.indexOf("\"", i);
-		return erreur.substring(i, j - 4);
 	}
 
 }

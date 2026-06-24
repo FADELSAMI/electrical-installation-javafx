@@ -23,7 +23,7 @@ public class Pdb2526 extends Application {
 		HBox.setHgrow(titre, Priority.ALWAYS);
 		cp.setTop(hb);
 		Scene scene = new Scene(cp);
-		scene.getStylesheets().add(getClass().getResource("pdb2526.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("/org/isfce/pdb/view/css/pdb2526.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.setWidth(300);
 		primaryStage.setHeight(200);
