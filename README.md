@@ -43,19 +43,19 @@ ressources/
 
 ### Main Window
 
-![Main Window](screenshot/home.png)
+![Main Window](screenshot/home1.png)
 
 ### Rooms Management
 
-![Rooms](screenshot/rooms.png)
+![Rooms](screenshot/Rooms.png)
 
 ### Elements Management
 
-![Elements](screenshot/elements.png)
+![Elements](screenshot/Elements.png)
 
 ### Floor Plan
 
-![Floor Plan](screenshot/implantation.png)
+![Floor Plan](screenshot/Implantation.png)
 
 
 ## Author
