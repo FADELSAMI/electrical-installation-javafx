@@ -39,6 +39,25 @@ tests/
 ressources/
 ```
 
+## Screenshots
+
+### Main Window
+
+![Main Window](screenshot/home.png)
+
+### Rooms Management
+
+![Rooms](screenshot/rooms.png)
+
+### Elements Management
+
+![Elements](screenshot/elements.png)
+
+### Floor Plan
+
+![Floor Plan](screenshot/implantation.png)
+
+
 ## Author
 
 **Sami FADEL**
